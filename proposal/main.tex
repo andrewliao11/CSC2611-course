@@ -1,0 +1,130 @@
+
+\documentclass[a4paper]{article}
+
+%\usepackage[pages=all, color=black, position={current page.south}, placement=bottom, scale=1, opacity=1, vshift=5mm]{background}
+
+\usepackage[margin=1in]{geometry} % full-width
+
+% AMS Packages
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{mathtools}
+\usepackage{amssymb}
+\usepackage{booktabs}
+
+% Unicode
+\usepackage[utf8]{inputenc}
+\usepackage{hyperref}
+\newcommand{\AL}[1]{{\color{blue}{[Andrew: #1]}}}
+
+\hypersetup{
+	unicode,
+%	colorlinks,
+%	breaklinks,
+%	urlcolor=cyan, 
+%	linkcolor=blue, 
+	pdfauthor={Author One, Author Two, Author Three},
+	pdftitle={A simple article template},
+	pdfsubject={A simple article template},
+	pdfkeywords={article, template, simple},
+	pdfproducer={LaTeX},
+	pdfcreator={pdflatex}
+}
+
+% Vietnamese
+%\usepackage{vntex}
+
+% Natbib
+%\usepackage[sort&compress,numbers,square]{natbib}
+%\bibliographystyle{mplainnat}
+
+% Theorem, Lemma, etc
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{claim}{Claim}[theorem]
+\newtheorem{axiom}[theorem]{Axiom}
+\newtheorem{conjecture}[theorem]{Conjecture}
+\newtheorem{fact}[theorem]{Fact}
+\newtheorem{hypothesis}[theorem]{Hypothesis}
+\newtheorem{assumption}[theorem]{Assumption}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{criterion}[theorem]{Criterion}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{example}[theorem]{Example}
+\newtheorem{remark}[theorem]{Remark}
+\newtheorem{problem}[theorem]{Problem}
+\newtheorem{principle}[theorem]{Principle}
+
+\usepackage{graphicx, color}
+\graphicspath{{fig/}}
+
+%\usepackage[linesnumbered,ruled,vlined,commentsnumbered]{algorithm2e} % use algorithm2e for typesetting algorithms
+\usepackage{algorithm, algpseudocode} % use algorithm and algorithmicx for typesetting algorithms
+\usepackage{mathrsfs} % for \mathscr command
+
+\usepackage{lipsum}
+
+% Author info
+\title{CSC2611 Project Proposal}
+\author{Yuan-Hong Liao}
+
+\date{
+	Computer Science at the University of Toronto \\ \texttt{andrew@cs.toronto.edu}
+}
+
+\begin{document}
+\maketitle
+
+\section{Proposal}
+
+\subsection{Motivation}
+\AL{Some overview.} In this project, we want to improve the performance of lexical semantic change detection (LSC).
+\AL{Emphasize unsupervised}
+
+\subsection{Problem Formulation}
+Given two time-specific corpora $C^1, C^2$ and $N$ target words $\{w_i\}_{i=1:N}$.
+We denote the set of sentences containing the target word $w$ in corpus $C^1$ as $S_w^1$.
+We perform unsupervised predictions on which words lost or gained sense(s) between $C^1$ and $C^2$, and which ones did not.
+We formulate the problem as a binary classification problem over each target word and report the accuracy.
+
+\subsection{Proposed Approach: Influence Function}
+
+We following the intuition that if a word sharing similar \textit{semantic meanings} between two different corpora, the sentences containing the word also have similar \textit{influences} to a model.
+On the contrary, if a word losts or gains any sense between two corpora, the sentences containing the word impact a model differently.
+
+To measure the influrnence to a model, let us the empirical risk minimizer $\hat{\theta} \coloneqq \arg\min_{\theta \in \Theta} \mathcal{L} (s, \theta) $
+
+For a target word $w$ and a set of sentences containing the target word in two different corpora $S_w^1 \subseteq C^1$ and $S_w^2 \subseteq C^2$ , we train two different models that excluding the two sets of sentences separately:
+
+\begin{align}
+\begin{split}
+	\theta_1 & \leftarrow \arg\min \mathcal{L}(\{C^1 \setminus S_w^1, C^2\}) \\
+	\theta_2 & \leftarrow \arg\min \mathcal{L}(\{C^2 \setminus S_w^2, C^1\})
+\end{split}
+\end{align}
+
+
+
+If the target word is stable across two corpora, we expect $\theta_1$ and $\theta_2$ behaves similarly, and vice versa.
+However, it is prehibitive to train two neural networks to detect LSC of a single target word. 
+
+
+
+
+%\noindent\textbf{Notations.}
+
+
+
+\subsection{Datasets}
+
+
+
+\AL{Find potential datasets to evaluate semantic change detection}
+\AL{Given that there are some semantic changes in the words, can we ``see'' it? How to evaluate or compare?}
+\AL{What can we do when we know that a word undergo a semantic change through time}
+\AL{Can we input masked language to the CLIP model? so that we can see the diachronich change of the missing word}
+
+\end{document}
