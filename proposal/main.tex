@@ -12,6 +12,13 @@
 \usepackage{amssymb}
 \usepackage{booktabs}
 
+\usepackage[
+backend=biber,
+style=alphabetic,
+sorting=ynt
+]{biblatex}
+\addbibresource{ref.bib}
+
 % Unicode
 \usepackage[utf8]{inputenc}
 \usepackage{hyperref}
@@ -80,51 +87,53 @@
 
 \section{Proposal}
 
-\subsection{Motivation}
-\AL{Some overview.} In this project, we want to improve the performance of lexical semantic change detection (LSC).
-\AL{Emphasize unsupervised}
+\subsection{Introduction}
+
+The meanings of words continuously change over time, reflecting complicated processes in language and society. 
+Studying these types of changes in meaning enables researchers to learn more about human language and to extract temporal-dependent data from texts~\cite{kutuzov-etal-2018-diachronic}.
+The surge of large corpora and computation enables us to detect the diachronic semantic shift in a data-driven manner.
+In this project, we want to improve the performance of lexical semantic change detection (LSC) in an unsupervised manner~\cite{schlechtweg-etal-2020-semeval}.
+
 
 \subsection{Problem Formulation}
 Given two time-specific corpora $C^1, C^2$ and $N$ target words $\{w_i\}_{i=1:N}$.
-We denote the set of sentences containing the target word $w$ in corpus $C^1$ as $S_w^1$.
-We perform unsupervised predictions on which words lost or gained sense(s) between $C^1$ and $C^2$, and which ones did not.
-We formulate the problem as a binary classification problem over each target word and report the accuracy.
+We denote the set of sentences containing the target word $w$ in corpus $C^1$ as $S_w^1 \subseteq C^1$.
+We perform unsupervised predictions on which words lost or gained sense(s) between $C^1$ and $C^2$ and which ones did not.
+We formulate the problem as a binary classification problem and report the accuracy of each word.
+
 
 \subsection{Proposed Approach: Influence Function}
 
-We following the intuition that if a word sharing similar \textit{semantic meanings} between two different corpora, the sentences containing the word also have similar \textit{influences} to a model.
-On the contrary, if a word losts or gains any sense between two corpora, the sentences containing the word impact a model differently.
+We follow the intuition that if a word shares similar \textit{semantic meanings} between two different corpora, the sentences containing the word also have similar \textit{influences} to a model.
+On the contrary, if a word loses or gains any sense between two corpora, the sentences containing the word impact a model differently.
 
-To measure the influrnence to a model, let us the empirical risk minimizer $\hat{\theta} \coloneqq \arg\min_{\theta \in \Theta} \mathcal{L} (s, \theta) $
+To measure the influences on a model, let us consider a prediction problem that takes a sentence as input.
+For a loss function $\mathcal{L}(s, \theta)$, let $\sum_{s} \mathcal{L}(s, \theta)$ be the empirical risk and $\hat{\theta} = \arg\min_{\theta \in \Theta} \sum_{s} \mathcal{L}(s, \theta)$ be the empirical risk minimizer.
+We define the influence of $S_w^1$ to the difference in model $\Delta_{S_w^1} = \hat{\theta}_{-S_w^1} - \hat{\theta}$, where $\hat{\theta}_{-S_w^1} = \arg\min_{\theta \in \Theta} \sum_{s \not\in S_w^1} \mathcal{L}(s, \theta)$.
+If the target word is stable across two corpora, we expect $\Delta_{S_w^1}$ and $\Delta_{S_w^2}$ are similar, and vice versa.
 
-For a target word $w$ and a set of sentences containing the target word in two different corpora $S_w^1 \subseteq C^1$ and $S_w^2 \subseteq C^2$ , we train two different models that excluding the two sets of sentences separately:
+However, it is prohibitive to train two neural networks to detect the LSC of a single target word. 
+Inspired from the inflence function for neural networks~\cite{classic-influences, pmlr-v70-koh17a}, we locally approximate $\Delta_{S_w^1}$ as:
+
+
 
 \begin{align}
 \begin{split}
-	\theta_1 & \leftarrow \arg\min \mathcal{L}(\{C^1 \setminus S_w^1, C^2\}) \\
-	\theta_2 & \leftarrow \arg\min \mathcal{L}(\{C^2 \setminus S_w^2, C^1\})
+	\Delta_{S_w^1} \approx \frac{-1}{|\{ C^1, C^2 \}|} H^{-1}_{\hat{\theta}} \sum_{s \in S_w^1} \nabla_\theta \mathcal{L}(s, \theta)
+	\label{eq.influence}
 \end{split}
 \end{align}
 
+\noindent where $H_{\hat{\theta}} \coloneqq \frac{1}{|\{ C^1, C^2 \}|} \sum_{s \in \{ C^1, C^2 \}} \nabla^2 \mathcal{L}(s, \hat{\theta})$ is the Hessian and is positive definite (PD) by assumption. 
+For the proof of Eq.~\ref{eq.influence}, please refere to ~\cite{pmlr-v70-koh17a}.
+
+To perform LSC detection, we use the L2 norm between $\Delta_{S_w^1}$ and $\Delta_{S_w^2}$. If the difference is larger than a threshold $\tau$, we predict that the target word $w$ gained/lost sense(s) between $C^1$ and $C^2$.
 
 
-If the target word is stable across two corpora, we expect $\theta_1$ and $\theta_2$ behaves similarly, and vice versa.
-However, it is prehibitive to train two neural networks to detect LSC of a single target word. 
+\noindent\textbf{Dataset.} We use the dataset provided in ~\cite{schlechtweg-etal-2020-semeval} to benchmark the detection performance.
 
 
-
-
-%\noindent\textbf{Notations.}
-
-
-
-\subsection{Datasets}
-
-
-
-\AL{Find potential datasets to evaluate semantic change detection}
-\AL{Given that there are some semantic changes in the words, can we ``see'' it? How to evaluate or compare?}
-\AL{What can we do when we know that a word undergo a semantic change through time}
-\AL{Can we input masked language to the CLIP model? so that we can see the diachronich change of the missing word}
+\clearpage
+\printbibliography
 
 \end{document}
