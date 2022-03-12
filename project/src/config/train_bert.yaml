@@ -6,7 +6,7 @@ defaults:
 use_wandb: False
 data_dir: /home/andliao/workspace/course/csc2611-course-semantic-change/project/datasets/semeval2020_ulscd_eng/full_corpus
 vocab_size: 10000
-max_length: 512
+max_length: 128
 min_frequency: 2
 seed: 123
 mlm_probability: 0.15
@@ -19,6 +19,6 @@ learning_rate: 5e-5
 num_warmup_steps: 0
 gradient_accumulation_steps: 1
 max_train_steps: "???"
-num_train_epochs: 5
-weight_decay: 0.
+num_train_epochs: 30
+weight_decay: 0.01
 lr_scheduler_type: linear

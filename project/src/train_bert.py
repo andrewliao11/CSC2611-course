@@ -1,7 +1,10 @@
+#TODO: remove accelerator
+# Code adapted from https://github.com/huggingface/transformers/blob/master/examples/pytorch/language-modeling/run_mlm_no_trainer.py
 import random
 import torch
 import hydra
 import math
+import numpy as np
 import os.path as osp
 
 from tqdm.auto import tqdm
@@ -11,7 +14,7 @@ from glob import glob
 from torch.utils.data import Dataset
 
 import transformers
-from accelerate import Accelerator
+#from accelerate import Accelerator
 from transformers import PreTrainedTokenizerFast
 from transformers import (
     set_seed,
@@ -21,9 +24,14 @@ from transformers import (
     DataCollatorForLanguageModeling
 )
 
-#import ipdb
+import ipdb
 import logging
 logger = logging.getLogger(__name__)
+
+
+
+def cal_size(model):
+    return sum([np.prod(p.size()) for p in model.parameters()])
 
 
 # TODO: Avoid trimming/splitting down target words
@@ -32,7 +40,7 @@ def get_fast_tokenizer(config):
     from tokenizers import ByteLevelBPETokenizer
     tokenizer = ByteLevelBPETokenizer()
     tokenizer.train(
-        files=list(glob(osp.join(config.data_dir, '*.txt'))), 
+        files=list(glob(osp.join(config.data_dir, "*.txt"))), 
         vocab_size=config.vocab_size, 
         min_frequency=config.min_frequency, 
         special_tokens=[
@@ -55,19 +63,19 @@ def get_fast_tokenizer(config):
         ("<s>", tokenizer.token_to_id("<s>")),
     )
     
-    tokenizer.enable_padding(pad_id=tokenizer.token_to_id("<pad>"), pad_token='<pad>')
+    tokenizer.enable_padding(pad_id=tokenizer.token_to_id("<pad>"), pad_token="<pad>")
     tokenizer.enable_truncation(max_length=config.max_length)
 
 
     fast_tokenizer = PreTrainedTokenizerFast(tokenizer_object=tokenizer)
-    fast_tokenizer.pad_token = '<pad>'
-    fast_tokenizer.mask_token = '<mask>'
-    fast_tokenizer.unk_token = '<unk>'
+    fast_tokenizer.pad_token = "<pad>"
+    fast_tokenizer.mask_token = "<mask>"
+    fast_tokenizer.unk_token = "<unk>"
     
     return fast_tokenizer
-    
-    
 
+    
+'''   
 def init_accelerator():
     
     # Initialize the accelerator. We will let the accelerator handle device placement for us in this example.
@@ -90,14 +98,14 @@ def init_accelerator():
 
     accelerator.wait_for_everyone()
     return accelerator
+  '''
     
-    
-@hydra.main(config_path='./config', config_name='train_bert')
+@hydra.main(config_path="./config", config_name="train_bert")
 def main(config):
 
-    accelerator = init_accelerator()
+    #accelerator = init_accelerator()
 
-    if config.use_wandb and accelerator.is_local_main_process:
+    if config.use_wandb:# and accelerator.is_local_main_process:
         import wandb
         wandb.init(
             project="csc2611-course-semantic-change", 
@@ -111,18 +119,23 @@ def main(config):
         set_seed(config.seed)
         
     
-    raw_datasets = load_dataset('text', 
+    raw_datasets = load_dataset("text", 
         data_files={
-            'train': osp.join(config.data_dir, 'train/train.txt'), 
-            'val': osp.join(config.data_dir, 'val/val.txt'), 
+            "train": osp.join(config.data_dir, "train/train.txt"), 
+            "val": osp.join(config.data_dir, "val/val.txt"), 
         }
     )
     
     fast_tokenizer = get_fast_tokenizer(config)
     bert_auto_config = AutoConfig.from_pretrained("bert-base-uncased")
+    bert_auto_config.hidden_size = 8*16         # original: 12 * 64
+    bert_auto_config.num_attention_heads = 8    # original: 12
+    
     model = AutoModelForMaskedLM.from_config(bert_auto_config)
     model.resize_token_embeddings(len(fast_tokenizer))
     
+
+    logger.info(f"Model size: {cal_size(model)}")   # It was 89887880 (89M)
     
     ### Pre-process
     def tokenize_function(examples):
@@ -141,15 +154,15 @@ def main(config):
                 return_special_tokens_mask=True,
             )
         
-    with accelerator.main_process_first():
-        tokenized_datasets = raw_datasets.map(
-            tokenize_function,
-            batched=True,
-            num_proc=1,
-            remove_columns=["text"],
-            load_from_cache_file=False,
-            desc="Running tokenizer on dataset line_by_line",
-        )
+    #with accelerator.main_process_first():
+    tokenized_datasets = raw_datasets.map(
+        tokenize_function,
+        batched=True,
+        num_proc=1,
+        remove_columns=["text"],
+        load_from_cache_file=False,
+        desc="Running tokenizer on dataset line_by_line",
+    )
     
     train_dataset = tokenized_datasets["train"]
     eval_dataset = tokenized_datasets["val"]
@@ -199,9 +212,9 @@ def main(config):
     optimizer = transformers.AdamW(optimizer_grouped_parameters, lr=config.learning_rate)
 
     # Prepare everything with our `accelerator`.
-    model, optimizer, train_dataloader, eval_dataloader = accelerator.prepare(
-        model, optimizer, train_dataloader, eval_dataloader
-    )
+    #model, optimizer, train_dataloader, eval_dataloader = accelerator.prepare(
+    #    model, optimizer, train_dataloader, eval_dataloader
+    #)
     
     
     # Scheduler and math around the number of training steps.
@@ -215,12 +228,12 @@ def main(config):
         num_training_steps=config.max_train_steps,
     )
     
-    if accelerator.is_main_process:
-        fast_tokenizer.save_pretrained('.')
+    #if accelerator.is_main_process:
+    fast_tokenizer.save_pretrained(".")
     
     
     # Train!
-    total_batch_size = config.per_device_train_batch_size * accelerator.num_processes * config.gradient_accumulation_steps
+    total_batch_size = config.per_device_train_batch_size * config.gradient_accumulation_steps# * accelerator.num_processes
 
 
     logger.info("***** Running training *****")
@@ -231,19 +244,26 @@ def main(config):
     logger.info(f"  Gradient Accumulation steps = {config.gradient_accumulation_steps}")
     logger.info(f"  Total optimization steps = {config.max_train_steps}")
     # Only show the progress bar once on each machine.
-    progress_bar = tqdm(range(config.max_train_steps), disable=not accelerator.is_local_main_process)
+    #progress_bar = tqdm(range(config.max_train_steps), disable=not accelerator.is_local_main_process)
+    progress_bar = tqdm(range(config.max_train_steps))
     completed_steps = 0
 
+    
+    model.cuda()
     
     for epoch in range(config.num_train_epochs):
         model.train()
         for step, batch in enumerate(train_dataloader):
+            
+            batch = {k: v.cuda() for k, v in batch.items()}
             outputs = model(**batch)
             loss = outputs.loss
             loss = loss / config.gradient_accumulation_steps
             
             
-            accelerator.backward(loss)
+            #accelerator.backward(loss)
+            loss.backward()
+            
             if step % config.gradient_accumulation_steps == 0 or step == len(train_dataloader) - 1:
                 optimizer.step()
                 lr_scheduler.step()
@@ -252,8 +272,8 @@ def main(config):
                 completed_steps += 1
                 if config.use_wandb:
                     wandb.log({
-                        'step': completed_steps, 
-                        'train/loss': loss
+                        "step": completed_steps, 
+                        "train/loss": loss
                     })
 
             if completed_steps >= config.max_train_steps:
@@ -263,18 +283,20 @@ def main(config):
         losses = []
         for step, batch in enumerate(eval_dataloader):
             with torch.no_grad():
+                batch = {k: v.cuda() for k, v in batch.items()}
                 outputs = model(**batch)
 
             loss = outputs.loss
-            losses.append(accelerator.gather(loss.repeat(config.per_device_eval_batch_size)))
+            #losses.append(accelerator.gather(loss.repeat(config.per_device_eval_batch_size)))
+            losses.append(loss.repeat(config.per_device_eval_batch_size))
 
         losses = torch.cat(losses)
         losses = losses[: len(eval_dataset)]
         
         if config.use_wandb:
             wandb.log({
-                'epoch': epoch, 
-                'eval/loss': torch.mean(losses)
+                "epoch": epoch, 
+                "eval/loss": torch.mean(losses)
             })
         try:
             perplexity = math.exp(torch.mean(losses))
@@ -282,10 +304,12 @@ def main(config):
             perplexity = float("inf")
 
         logger.info(f"epoch {epoch}: perplexity: {perplexity}")
-        accelerator.wait_for_everyone()
-        unwrapped_model = accelerator.unwrap_model(model)
-        unwrapped_model.save_pretrained(f'model-{epoch}', save_function=accelerator.save)
+        #accelerator.wait_for_everyone()
+        #unwrapped_model = accelerator.unwrap_model(model)
+        #unwrapped_model.save_pretrained(f"model-{epoch}", save_function=accelerator.save)
+        model.save_pretrained(f"model-{epoch}")
+        #to load: model = AutoModelForMaskedLM.from_pretrained("model")
 
     
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
