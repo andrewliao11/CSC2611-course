@@ -100,6 +100,7 @@ def init_accelerator():
     return accelerator
   '''
     
+    
 @hydra.main(config_path="./config", config_name="train_bert")
 def main(config):
 
@@ -109,7 +110,7 @@ def main(config):
         import wandb
         wandb.init(
             project="csc2611-course-semantic-change", 
-            name=f"vocab_size_{config.vocab_size}-mlm_probability_{config.mlm_probability}-learning_rate_{config.learning_rate}", 
+            name=f"vocab_size_{config.vocab_size}-batch_size{config.per_device_train_batch_size}-learning_rate_{config.learning_rate}", 
             entity="andrewliao11", 
             config=config
         )
@@ -293,17 +294,21 @@ def main(config):
         losses = torch.cat(losses)
         losses = losses[: len(eval_dataset)]
         
-        if config.use_wandb:
-            wandb.log({
-                "epoch": epoch, 
-                "eval/loss": torch.mean(losses)
-            })
+        
         try:
             perplexity = math.exp(torch.mean(losses))
         except OverflowError:
             perplexity = float("inf")
 
         logger.info(f"epoch {epoch}: perplexity: {perplexity}")
+        
+        if config.use_wandb:
+            wandb.log({
+                "epoch": epoch, 
+                "eval/loss": torch.mean(losses), 
+                "eval/perplexity": perplexity
+            })
+            
         #accelerator.wait_for_everyone()
         #unwrapped_model = accelerator.unwrap_model(model)
         #unwrapped_model.save_pretrained(f"model-{epoch}", save_function=accelerator.save)
