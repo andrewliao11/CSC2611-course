@@ -4,6 +4,7 @@ import random
 import torch
 import hydra
 import math
+import json
 import numpy as np
 import os.path as osp
 
@@ -185,7 +186,8 @@ def main(config):
     no_decay = ["bias", "LayerNorm.weight"]
     optimizer_grouped_parameters = {n: 0.0 if any(nd in n for nd in no_decay) else config.weight_decay for n, p in model.named_parameters()}
     
-        
+    
+    save_outputs = {}
     for target_word, binary_gt, grade_gt in zip(target_words, binary_gts, grade_gts):
         logger.info(f"***** {target_word}: {binary_gt}, {grade_gt} *****")
         
@@ -224,7 +226,11 @@ def main(config):
                 optimizer_grouped_parameters
             )
             
+            
             logger.info(f"Remove sentences containing `{target_word}` from {corpus_name}: {influences}")
+            save_outputs[target_word] = [influences.item(), binary_gt, grade_gt]
+            
+            json.dump(save_outputs, open("outputs.json", "w"))
         
             
 if __name__ == "__main__":
