@@ -40,7 +40,7 @@ def get_fast_tokenizer(config):
     from tokenizers import ByteLevelBPETokenizer
     tokenizer = ByteLevelBPETokenizer()
     tokenizer.train(
-        files=list(glob(osp.join(config.data_dir, "*.txt"))), 
+        files=list(glob(osp.join(config.data_dir, "full_corpus/train/*.txt"))), 
         vocab_size=config.vocab_size, 
         min_frequency=config.min_frequency, 
         special_tokens=[
@@ -122,8 +122,8 @@ def main(config):
     
     raw_datasets = load_dataset("text", 
         data_files={
-            "train": osp.join(config.data_dir, "train/train.txt"), 
-            "val": osp.join(config.data_dir, "val/val.txt"), 
+            "train": osp.join(config.data_dir, "full_corpus/train/train.txt"), 
+            "val": osp.join(config.data_dir, "full_corpus/val/val.txt"), 
         }
     )
     
