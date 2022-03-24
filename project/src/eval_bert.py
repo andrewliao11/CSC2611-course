@@ -187,11 +187,12 @@ def main(config):
     optimizer_grouped_parameters = {n: 0.0 if any(nd in n for nd in no_decay) else config.weight_decay for n, p in model.named_parameters()}
     
     
-    save_outputs = {}
+    save_outputs = []
     for target_word, binary_gt, grade_gt in zip(target_words, binary_gts, grade_gts):
         logger.info(f"***** {target_word}: {binary_gt}, {grade_gt} *****")
         
         for corpus_name in ["ccoha1.txt", "ccoha2.txt"]:
+            logger.info(f"Remove sentences containing `{target_word}` from {corpus_name}")
             train_corpus_1_targets_dataset = train_dataset.filter(
                 partial(filter_fn, 
                     remove_target=False, 
@@ -217,6 +218,8 @@ def main(config):
                 desc=f"Filter sentences for {target_word}"
             )
             
+            
+            logger.info(f"Train set size {len(train_corpus_1_targets_dataset)}, eval set size: {len(eval_targets_dataset)}")
             influences = compute_influences(
                 config, 
                 model, 
@@ -225,11 +228,9 @@ def main(config):
                 data_collator, 
                 optimizer_grouped_parameters
             )
+            logger.info(f"Influence: {influences.item()}")
             
-            
-            logger.info(f"Remove sentences containing `{target_word}` from {corpus_name}: {influences}")
-            save_outputs[target_word] = [influences.item(), binary_gt, grade_gt]
-            
+            save_outputs.append([target_word, corpus_name, influences.item(), binary_gt, grade_gt])
             json.dump(save_outputs, open("outputs.json", "w"))
         
             
