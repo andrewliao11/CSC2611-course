@@ -14,7 +14,7 @@ def main():
     binary = {}
     grades = {}
     for i in outputs:
-        target_word, corpus, influence, binary_gt, grade_gt = i
+        target_word, corpus, influence, binary_gt, grade_gt, n_removed = i
         binary[target_word] = int(binary_gt)
         grades[target_word] = float(grade_gt)
         if influence < 100:

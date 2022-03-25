@@ -18,5 +18,7 @@ hessian_approx:
   damping: 1e-2
   recursion_depth: 10000
 
+
+normalize_inf: False
 weight_decay: 0.01
 num_proc: 2

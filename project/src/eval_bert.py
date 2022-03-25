@@ -186,53 +186,70 @@ def main(config):
     no_decay = ["bias", "LayerNorm.weight"]
     optimizer_grouped_parameters = {n: 0.0 if any(nd in n for nd in no_decay) else config.weight_decay for n, p in model.named_parameters()}
     
-    
-    save_outputs = []
+    out_filename = f"scale_{config.hessian_approx.scale}-recursion_depth_{config.hessian_approx.recursion_depth}"
+    if config.normalize_inf:
+        out_filename += "-normalize_inf"
+
+    out_filename += ".json"
+    out_filename = osp.join(config.snapshot_dir, out_filename)
+    if osp.exists(out_filename):
+        save_outputs = json.load(open(out_filename))
+    else:
+        save_outputs = []
+
     for target_word, binary_gt, grade_gt in zip(target_words, binary_gts, grade_gts):
         logger.info(f"***** {target_word}: {binary_gt}, {grade_gt} *****")
         
         for corpus_name in ["ccoha1.txt", "ccoha2.txt"]:
-            logger.info(f"Remove sentences containing `{target_word}` from {corpus_name}")
-            train_corpus_1_targets_dataset = train_dataset.filter(
-                partial(filter_fn, 
-                    remove_target=False, 
-                    corpus_name=corpus_name, 
-                    target_word=target_word, 
-                    fast_tokenizer=fast_tokenizer
-                ), 
-                with_indices=True, 
-                load_from_cache_file=False, 
-                num_proc=config.num_proc,
-                desc=f"Filter sentences for {target_word}"
-            )
+
+            match = np.array([i[0] == target_word and i[1] == corpus_name for i in save_outputs])        
+            if any(match):
+                i = np.where(match)[0][0]
+                influences = save_outputs[i][2]
+            else:
+                logger.info(f"Remove sentences containing `{target_word}` from {corpus_name}")
+                train_corpus_1_targets_dataset = train_dataset.filter(
+                    partial(filter_fn, 
+                        remove_target=False, 
+                        corpus_name=corpus_name, 
+                        target_word=target_word, 
+                        fast_tokenizer=fast_tokenizer
+                    ), 
+                    with_indices=True, 
+                    load_from_cache_file=False, 
+                    num_proc=config.num_proc,
+                    desc=f"Filter sentences for {target_word}"
+                )
+                
+                eval_targets_dataset = eval_dataset.filter(
+                    partial(filter_fn, 
+                        remove_target=False, 
+                        target_word=target_word, 
+                        fast_tokenizer=fast_tokenizer
+                    ), 
+                    with_indices=True, 
+                    load_from_cache_file=False, 
+                    num_proc=config.num_proc,
+                    desc=f"Filter sentences for {target_word}"
+                )
+                
+                
+                logger.info(f"Train set size {len(train_corpus_1_targets_dataset)}, eval set size: {len(eval_targets_dataset)}")
+                influences = compute_influences(
+                    config, 
+                    model, 
+                    train_corpus_1_targets_dataset.remove_columns(["text", "source"]), 
+                    eval_targets_dataset.remove_columns(["text", "source"]), 
+                    data_collator, 
+                    optimizer_grouped_parameters
+                )
+                influences = influences.item()
+                
+                save_outputs.append([target_word, corpus_name, influences, binary_gt, grade_gt, len(train_corpus_1_targets_dataset)])
+
+            logger.info(f"Influence: {influences}")
+            json.dump(save_outputs, open(out_filename, "w"))
             
-            eval_targets_dataset = eval_dataset.filter(
-                partial(filter_fn, 
-                    remove_target=False, 
-                    target_word=target_word, 
-                    fast_tokenizer=fast_tokenizer
-                ), 
-                with_indices=True, 
-                load_from_cache_file=False, 
-                num_proc=config.num_proc,
-                desc=f"Filter sentences for {target_word}"
-            )
-            
-            
-            logger.info(f"Train set size {len(train_corpus_1_targets_dataset)}, eval set size: {len(eval_targets_dataset)}")
-            influences = compute_influences(
-                config, 
-                model, 
-                train_corpus_1_targets_dataset.remove_columns(["text", "source"]), 
-                eval_targets_dataset.remove_columns(["text", "source"]), 
-                data_collator, 
-                optimizer_grouped_parameters
-            )
-            logger.info(f"Influence: {influences.item()}")
-            
-            save_outputs.append([target_word, corpus_name, influences.item(), binary_gt, grade_gt])
-            json.dump(save_outputs, open("outputs.json", "w"))
-        
             
 if __name__ == "__main__":
     main()
