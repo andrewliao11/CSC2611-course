@@ -1,0 +1,90 @@
+% This must be in the first 5 lines to tell arXiv to use pdfLaTeX, which is strongly recommended.
+\pdfoutput=1
+% In particular, the hyperref package requires pdfLaTeX in order to break URLs across lines.
+
+\documentclass[11pt]{article}
+
+% Remove the "review" option to generate the final version.
+%\usepackage[review]{acl}
+\usepackage[]{acl}
+
+% Standard package includes
+\usepackage{times}
+\usepackage{latexsym}
+
+% For proper rendering and hyphenation of words containing Latin characters (including in bib files)
+\usepackage[T1]{fontenc}
+% For Vietnamese characters
+% \usepackage[T5]{fontenc}
+% See https://www.latex-project.org/help/documentation/encguide.pdf for other character sets
+
+% This assumes your files are encoded as UTF8
+\usepackage[utf8]{inputenc}
+
+% This is not strictly necessary, and may be commented out,
+% but it will improve the layout of the manuscript,
+% and will typically save some space.
+\usepackage{microtype}
+
+\usepackage[dvipsnames]{xcolor}
+\newcommand{\AL}[1]{{\color{blue}{[Andrew: #1]}}}
+
+% If the title and author information does not fit in the area allocated, uncomment the following
+%
+%\setlength\titlebox{<dim>}
+%
+% and set <dim> to something 5cm or larger.
+
+\title{Unsupervised Lexical Semantic Change Detection via Influences Function}
+
+% Author information can be set in various styles:
+% For several authors from the same institution:
+% \author{Author 1 \and ... \and Author n \\
+%         Address line \\ ... \\ Address line}
+% if the names do not fit well on one line use
+%         Author 1 \\ {\bf Author 2} \\ ... \\ {\bf Author n} \\
+% For authors from different institutions:
+% \author{Author 1 \\ Address line \\  ... \\ Address line
+%         \And  ... \And
+%         Author n \\ Address line \\ ... \\ Address line}
+% To start a seperate ``row'' of authors use \AND, as in
+% \author{Author 1 \\ Address line \\  ... \\ Address line
+%         \AND
+%         Author 2 \\ Address line \\ ... \\ Address line \And
+%         Author 3 \\ Address line \\ ... \\ Address line}
+
+\author{
+  Yuan-Hong Liao \\
+  University of Toronto \\
+  \texttt{andrew@cs.toronto.edu}}
+
+\begin{document}
+\maketitle
+\begin{abstract}
+  Languages change through time and detecting lexical semantic change in languages provides better understanding across different cultures, regions, and time spans.
+  Determining the ground truth of languages semantic change requires high linguistics expertise. 
+  Therefore, this work aim to detect the lexical semantic change between two corpora in an unsupervised manner.
+  This work leverages the fact that language models learn the word usage in a given corpora. 
+  Once a word undergoes any semantic change, the language models trained on the corpus change accordingly.
+  I implement this motivation via influence functions to efficiently approximate the model trained on different corpus configuratinos.
+  In the SemEval2020 benchmark, the proposed approach, InfDetect, achieves ?? accuracy in the binary task, outperforming ?? from 22 teams in the SemEval2020 chanllenges.
+  In the ranking task, InfDetect achieves spearman correlation ??, outperforming ?? from 22 teams in the SemEval2020 chanllenges.
+\end{abstract}
+
+\input{sec/intro.tex}
+\input{sec/rw.tex}
+\input{sec/method.tex}
+\input{sec/exp.tex}
+\input{sec/discussion.tex}
+
+% Entries for the entire Anthology, followed by custom entries
+\bibliography{anthology,custom}
+
+%\appendix
+
+%\section{Example Appendix}
+%\label{sec:appendix}
+
+%This is an appendix.
+
+\end{document}
