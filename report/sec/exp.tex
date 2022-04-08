@@ -2,15 +2,90 @@
 
 \subsection{SevEval2020}
 
-\AL{scale of data, where does the data come from, how do they obtain the ground truth, what is the sub-tasks, evaluation metrics}
+I use the English task in SemEval2020 benchmark~\cite{semeval2020}.
+The corpus is from Clean Corpus of Historical American English (CCOHA)~\cite{ccoha1,ccoha2}, which spans 1810s-2000s.
+The corpus is split into two time-specific corpora $C_1, C_2$, as defined in Table~\ref{tab:cchoa}.
+There are, in total, 37 target words, and I will evaluate the proposed method in both binary classification and ranking problems.
+
+
+\noindent\textbf{Metrics.} 
+For classification, we use standard accuracy. For ranking problem, we use spearman's correlation.
+
+\begin{table}[t]
+\centering
+\resizebox{0.8\linewidth}{!}{%
+\begin{tabular}{@{}crrrr@{}}
+\toprule
+\multicolumn{1}{r}{}       & \multicolumn{1}{c}{periods} & \multicolumn{1}{c}{tokens} & \multicolumn{1}{c}{types} & \multicolumn{1}{c}{TTR} \\ \midrule
+\multicolumn{1}{c|}{$C_1$} & 1810–1860                   & 6.5M                       & 87k                       & 13.38                   \\
+\multicolumn{1}{c|}{$C_2$} & 1960-2010                   & 6.7M                       & 150k                      & 22.38                   \\ \bottomrule
+\end{tabular}%
+}
+\caption{Statistics of test corpora. TTR = Type-Token ratio (number of types  / number of tokens * 1000)}
+\label{tab:cchoa}
+\end{table}
+
+%\AL{scale of data, where does the data come from, how do they obtain the ground truth, what is the sub-tasks, evaluation metrics}
+
+\subsection{Implementation Details}
+For the empirical minimizer, we use a modified BERT~\cite{BERT} model.
+In my case, I do not necessarily need a model to achieve the SOTA language modeling performance. 
+To make the training less computationally intensive, I decrease the hidden units from 768 to 128, 12 attention heads to 8 attention heads, and set the max length to 128.
+The modification reduces the model size from 110M to 10M parameters.
+To approximate the hessian inverse product in Eq.~\ref{eq:scores_mlm}, we set the scale to be 5000, recursion depth 10000, and damping $1e-2$.
+The source code is released at https://github.com/andrewliao11/csc2611-course-semantic-change.
 
 
 \subsection{Binary Classificaiton}
 
+For binary classification, I achieve 0.7 accuracies, outperforming 20 out of 22 participants in SemEval challenge~\cite{semeval2020}.
+Since each team can submit ten trials in the challenge, I try ten different thresholds that equally split the range between maximum influence and min influence and report the best performance.
+I show the predicted influences in Fig.~\ref{fig:binary}.
+For the words that do not experience any LSC change, the word ``ball'' has the greatest predicted influence. 
+From the ground truth rank, the word ``ball'' is the 5th highest word, with a score of $0.409$.
+The binary classification considers if the target word gain or loss any sense between two corpora, which is different from how the ground truth of the rank is measured.
+I will discuss the comparison between binary classification and ranking problem in Sec.~\ref{sec:}
+
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.5\textwidth]{../project/src/influences_binary.pdf}
+\caption{\textbf{Predicted Influences.} The red dash lines are the threshold for binary classification.}
+\label{fig:binary}
+\end{figure}
+
+
 
 \subsection{Ranking}
 
-\subsection{Qualitative Results}
+
+For the ranking problem, I achieve $0.59$ spearman's correlation, outperforming all 22 participants in SemEval2020~\cite{semeval2020}.
+The predicted influences and the ground truth grades are shown in Fig.~\ref{fig:rank}.
+One failure case is the word ``plane'', which has a ground truth grade of 0.88, while the predicted influence is as low as 0.02, which ranks middle (19th) in terms of predicted influence.
+
+
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.5\textwidth]{../project/src/influences_grade_scatter.pdf}
+\caption{\textbf{Predicted Influences vs. ground truth grade.}}
+\label{fig:rank}
+\end{figure}
+
+
+
+%\subsection{Qualitative Results}
 
 \subsection{Analysis}
+The estimated LSC scores are the average predicted influences. 
+In Fig.~\ref{fig:inf_time}, I show the predicted influences in $C_1$ and $C_2$. 
+The word ``player'', ``fiction'', and ``relationship'' have the most difference between predicted influences in $C_1$ and $C_2$, more than 300\%.
+For certain words, the computation of inverse HVP diverges. In these cases, I treat them as an outlier and do not consider their values.
 
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.5\textwidth]{../project/src/influences_by_corpus.pdf}
+\caption{\textbf{Predicted Influences in different time periods.}}
+\label{fig:inf_time}
+\end{figure}

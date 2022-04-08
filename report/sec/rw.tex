@@ -4,3 +4,12 @@
 \subsection{Unsupervised Lexical Semantic Change Detection}
 
 
+
+
+There are two strands of approach for LSC detection in the computational field.
+The first strand deals with words as a whole and determines change based on a word's dominant sense~\cite{dominant-sense1,dominant-sense2}.
+The second strand deals with a word's sense individually~\cite{second-strand1,second-strand2}.
+These two correspond to two tasks in SemEval2020~\cite{semeval2020}: binary classification and ranking problem.
+Prior work~\cite{temporalteller} leverages synchronic word embeddings and computes the distance between two corpora.
+On the contrary, ~\cite{diachronic-survey} surveys approaches that use diachronic word embeddings to perform semantic shifts detection.
+In this work, I go from a different direction: I investigate the model's changes w.r.t. the target words by utilizing influence functions~\cite{influence_fn}.

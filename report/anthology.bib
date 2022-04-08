@@ -1,3 +1,193 @@
 % Please download the latest anthology.bib from
 %
 % http://aclweb.org/anthology/anthology.bib.gz
+
+@inproceedings{semeval2020,
+    title = "{S}em{E}val-2020 Task 1: Unsupervised Lexical Semantic Change Detection",
+    author = "Schlechtweg, Dominik  and
+      McGillivray, Barbara  and
+      Hengchen, Simon  and
+      Dubossarsky, Haim  and
+      Tahmasebi, Nina",
+    booktitle = "Proceedings of the Fourteenth Workshop on Semantic Evaluation",
+    month = dec,
+    year = "2020",
+    address = "Barcelona (online)",
+    publisher = "International Committee for Computational Linguistics",
+    url = "https://aclanthology.org/2020.semeval-1.1",
+    doi = "10.18653/v1/2020.semeval-1.1",
+    pages = "1--23",
+    abstract = "Lexical Semantic Change detection, i.e., the task of identifying words that change meaning over time, is a very active research area, with applications in NLP, lexicography, and linguistics. Evaluation is currently the most pressing problem in Lexical Semantic Change detection, as no gold standards are available to the community, which hinders progress. We present the results of the first shared task that addresses this gap by providing researchers with an evaluation framework and manually annotated, high-quality datasets for English, German, Latin, and Swedish. 33 teams submitted 186 systems, which were evaluated on two subtasks.",
+}
+
+@misc{BERT,
+  doi = {10.48550/ARXIV.1810.04805},
+  url = {https://arxiv.org/abs/1810.04805},
+  author = {Devlin, Jacob and Chang, Ming-Wei and Lee, Kenton and Toutanova, Kristina},
+  keywords = {Computation and Language (cs.CL), FOS: Computer and information sciences, FOS: Computer and information sciences},
+  title = {BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding},
+  publisher = {arXiv},
+  year = {2018},
+  copyright = {arXiv.org perpetual, non-exclusive license}
+}
+
+
+@InProceedings{influence_fn,
+  title = 	 {Understanding Black-box Predictions via Influence Functions},
+  author =       {Pang Wei Koh and Percy Liang},
+  booktitle = 	 {Proceedings of the 34th International Conference on Machine Learning},
+  pages = 	 {1885--1894},
+  year = 	 {2017},
+  editor = 	 {Precup, Doina and Teh, Yee Whye},
+  volume = 	 {70},
+  series = 	 {Proceedings of Machine Learning Research},
+  month = 	 {06--11 Aug},
+  publisher =    {PMLR},
+  pdf = 	 {http://proceedings.mlr.press/v70/koh17a/koh17a.pdf},
+  url = 	 {https://proceedings.mlr.press/v70/koh17a.html},
+  abstract = 	 {How can we explain the predictions of a black-box model? In this paper, we use influence functions — a classic technique from robust statistics — to trace a model’s prediction through the learning algorithm and back to its training data, thereby identifying training points most responsible for a given prediction. To scale up influence functions to modern machine learning settings, we develop a simple, efficient implementation that requires only oracle access to gradients and Hessian-vector products. We show that even on non-convex and non-differentiable models where the theory breaks down, approximations to influence functions can still provide valuable information. On linear models and convolutional neural networks, we demonstrate that influence functions are useful for multiple purposes: understanding model behavior, debugging models, detecting dataset errors, and even creating visually-indistinguishable training-set attacks.}
+}
+
+@book{influence_fn_book,
+ series = {Monographs on statistics and applied probability (Series)},
+ publisher = {Chapman and Hall},
+ isbn = {041224280x},
+ year = {1982},
+ title = {Residuals and influence in regression},
+ language = {eng},
+ address = {New York ; London},
+ author = {Cook, R. Dennis},
+ keywords = {Regression analysis},
+ lccn = {82-4412},
+ }
+
+ @article{second-order-approx,
+  doi = {10.48550/ARXIV.1602.03943},
+  url = {https://arxiv.org/abs/1602.03943},
+  author = {Agarwal, Naman and Bullins, Brian and Hazan, Elad},
+  keywords = {Machine Learning (stat.ML), Machine Learning (cs.LG), FOS: Computer and information sciences, FOS: Computer and information sciences},
+  title = {Second-Order Stochastic Optimization for Machine Learning in Linear Time},
+  publisher = {arXiv},
+  year = {2016},
+  copyright = {arXiv.org perpetual, non-exclusive license}
+}
+
+@article{ccoha1,
+  title={Expanding horizons in historical linguistics with the 400-million word Corpus of Historical American English},
+  author={Mark Davies},
+  journal={Corpora},
+  year={2012},
+  volume={7},
+  pages={121-157}
+}
+@inproceedings{ccoha2,
+    title = "{CCOHA}: Clean Corpus of Historical {A}merican {E}nglish",
+    author = "Alatrash, Reem  and
+      Schlechtweg, Dominik  and
+      Kuhn, Jonas  and
+      Schulte im Walde, Sabine",
+    booktitle = "Proceedings of the 12th Language Resources and Evaluation Conference",
+    month = may,
+    year = "2020",
+    address = "Marseille, France",
+    publisher = "European Language Resources Association",
+    url = "https://aclanthology.org/2020.lrec-1.859",
+    pages = "6958--6966",
+    abstract = "Modelling language change is an increasingly important area of interest within the fields of sociolinguistics and historical linguistics. In recent years, there has been a growing number of publications whose main concern is studying changes that have occurred within the past centuries. The Corpus of Historical American English (COHA) is one of the most commonly used large corpora in diachronic studies in English. This paper describes methods applied to the downloadable version of the COHA corpus in order to overcome its main limitations, such as inconsistent lemmas and malformed tokens, without compromising its qualitative and distributional properties. The resulting corpus CCOHA contains a larger number of cleaned word tokens which can offer better insights into language change and allow for a larger variety of tasks to be performed.",
+    language = "English",
+    ISBN = "979-10-95546-34-4",
+}
+
+@misc{challenges_lsc,
+  doi = {10.48550/ARXIV.2101.07668},
+  
+  url = {https://arxiv.org/abs/2101.07668},
+  
+  author = {Hengchen, Simon and Tahmasebi, Nina and Schlechtweg, Dominik and Dubossarsky, Haim},
+  
+  keywords = {Computation and Language (cs.CL), FOS: Computer and information sciences, FOS: Computer and information sciences},
+  
+  title = {Challenges for Computational Lexical Semantic Change},
+  
+  publisher = {arXiv},
+  
+  year = {2021},
+  
+  copyright = {Creative Commons Attribution Non Commercial No Derivatives 4.0 International}
+}
+@inproceedings{diachronic-survey,
+    title = "Diachronic word embeddings and semantic shifts: a survey",
+    author = "Kutuzov, Andrey  and
+      {\O}vrelid, Lilja  and
+      Szymanski, Terrence  and
+      Velldal, Erik",
+    booktitle = "Proceedings of the 27th International Conference on Computational Linguistics",
+    month = aug,
+    year = "2018",
+    address = "Santa Fe, New Mexico, USA",
+    publisher = "Association for Computational Linguistics",
+    url = "https://aclanthology.org/C18-1117",
+    pages = "1384--1397",
+    abstract = "Recent years have witnessed a surge of publications aimed at tracing temporal changes in lexical semantics using distributional methods, particularly prediction-based word embedding models. However, this vein of research lacks the cohesion, common terminology and shared practices of more established areas of natural language processing. In this paper, we survey the current state of academic research related to diachronic word embeddings and semantic shifts detection. We start with discussing the notion of semantic shifts, and then continue with an overview of the existing methods for tracing such time-related shifts with word embedding models. We propose several axes along which these methods can be compared, and outline the main challenges before this emerging subfield of NLP, as well as prospects and possible applications.",
+}
+@misc{dominant-sense1,
+  doi = {10.48550/ARXIV.1411.3315},
+  
+  url = {https://arxiv.org/abs/1411.3315},
+  
+  author = {Kulkarni, Vivek and Al-Rfou, Rami and Perozzi, Bryan and Skiena, Steven},
+  
+  keywords = {Computation and Language (cs.CL), Information Retrieval (cs.IR), Machine Learning (cs.LG), FOS: Computer and information sciences, FOS: Computer and information sciences, H.3.3; I.2.6},
+  
+  title = {Statistically Significant Detection of Linguistic Change},
+  
+  publisher = {arXiv},
+  
+  year = {2014},
+  
+  copyright = {arXiv.org perpetual, non-exclusive license}
+}
+@inproceedings{dominant-sense2,
+    title = "Temporal Analysis of Language through Neural Language Models",
+    author = "Kim, Yoon  and
+      Chiu, Yi-I  and
+      Hanaki, Kentaro  and
+      Hegde, Darshan  and
+      Petrov, Slav",
+    booktitle = "Proceedings of the {ACL} 2014 Workshop on Language Technologies and Computational Social Science",
+    month = jun,
+    year = "2014",
+    address = "Baltimore, MD, USA",
+    publisher = "Association for Computational Linguistics",
+    url = "https://aclanthology.org/W14-2517",
+    doi = "10.3115/v1/W14-2517",
+    pages = "61--65",
+}
+
+@phdthesis{second-strand1,
+	author = {Tahmasebi, Nina N.},
+	interhash = {53616df94218a34a24b77ace30e618e0},
+	intrahash = {143920ef1c49abe416bfb77716259976},
+	month = {november},
+	school = {Gottfried Wilhelm Leibniz Universität Hannover},
+	title = {	
+	Models and Algorithms for Automatic Detection of Language Evolution},
+	url = {http://edok01.tib.uni-hannover.de/edoks/e01dh13/771705034.pdf},
+	year = 2013
+}
+@article{second-strand2, title={An automatic approach to identify word sense changes in text media across timescales}, volume={21}, DOI={10.1017/S135132491500011X}, number={5}, journal={Natural Language Engineering}, publisher={Cambridge University Press}, author={MITRA, SUNNY and MITRA, RITWIK and MAITY, SUMAN KALYAN and RIEDL, MARTIN and BIEMANN, CHRIS and GOYAL, PAWAN and MUKHERJEE, ANIMESH}, year={2015}, pages={773–798}}
+
+@inproceedings{temporalteller,
+    title = "{T}emporal{T}eller at {S}em{E}val-2020 Task 1: Unsupervised Lexical Semantic Change Detection with Temporal Referencing",
+    author = "Zhou, Jinan  and
+      Li, Jiaxin",
+    booktitle = "Proceedings of the Fourteenth Workshop on Semantic Evaluation",
+    month = dec,
+    year = "2020",
+    address = "Barcelona (online)",
+    publisher = "International Committee for Computational Linguistics",
+    url = "https://aclanthology.org/2020.semeval-1.27",
+    doi = "10.18653/v1/2020.semeval-1.27",
+    pages = "222--231",
+    abstract = "This paper describes our TemporalTeller system for SemEval Task 1: Unsupervised Lexical Semantic Change Detection. We develop a unified framework for the common semantic change detection pipelines including preprocessing, learning word embeddings, calculating vector distances and determining threshold. We also propose Gamma Quantile Threshold to distinguish between changed and stable words. Based on our system, we conduct a comprehensive comparison among BERT, Skip-gram, Temporal Referencing and alignment-based methods. Evaluation results show that Skip-gram with Temporal Referencing achieves the best performance of 66.5{\%} classification accuracy and 51.8{\%} Spearman{'}s Ranking Correlation.",
+}

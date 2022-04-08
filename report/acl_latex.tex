@@ -11,6 +11,7 @@
 % Standard package includes
 \usepackage{times}
 \usepackage{latexsym}
+\usepackage{amsfonts}
 
 % For proper rendering and hyphenation of words containing Latin characters (including in bib files)
 \usepackage[T1]{fontenc}
@@ -25,8 +26,13 @@
 % but it will improve the layout of the manuscript,
 % and will typically save some space.
 \usepackage{microtype}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{amsthm}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{mathtools}
 
-\usepackage[dvipsnames]{xcolor}
 \newcommand{\AL}[1]{{\color{blue}{[Andrew: #1]}}}
 
 % If the title and author information does not fit in the area allocated, uncomment the following
@@ -35,7 +41,7 @@
 %
 % and set <dim> to something 5cm or larger.
 
-\title{Unsupervised Lexical Semantic Change Detection via Influences Function}
+\title{Unsupervised Lexical Semantic Change Detection via Influence Functions}
 
 % Author information can be set in various styles:
 % For several authors from the same institution:
@@ -61,15 +67,16 @@
 \begin{document}
 \maketitle
 \begin{abstract}
-  Languages change through time and detecting lexical semantic change in languages provides better understanding across different cultures, regions, and time spans.
-  Determining the ground truth of languages semantic change requires high linguistics expertise. 
-  Therefore, this work aim to detect the lexical semantic change between two corpora in an unsupervised manner.
-  This work leverages the fact that language models learn the word usage in a given corpora. 
-  Once a word undergoes any semantic change, the language models trained on the corpus change accordingly.
-  I implement this motivation via influence functions to efficiently approximate the model trained on different corpus configuratinos.
-  In the SemEval2020 benchmark, the proposed approach, InfDetect, achieves ?? accuracy in the binary task, outperforming ?? from 22 teams in the SemEval2020 chanllenges.
-  In the ranking task, InfDetect achieves spearman correlation ??, outperforming ?? from 22 teams in the SemEval2020 chanllenges.
+  Languages change through time, and detecting the lexical semantic change in languages provides better understanding across different cultures, regions, and periods.
+ Determining the ground truth of language semantic change requires high linguistics expertise. 
+ Therefore, this work aims to detect the lexical semantic change between two corpora in an unsupervised manner.
+ This work leverages the fact that language models learn word usage in a given corpus. 
+ Once a word undergoes any semantic change, the language models trained on the corpus change accordingly.
+ I implement this motivation via influence functions to efficiently approximate the model trained on different corpus configurations.
+ In the SemEval2020 benchmark, the proposed approach achieves 0.7 accuracies in the binary task, outperforming 20 from 22 teams in the SemEval2020 challenges.
+ In the ranking task, it achieves spearman's correlation of 0.59, outperforming all 22 teams in the SemEval2020 challenges.
 \end{abstract}
+
 
 \input{sec/intro.tex}
 \input{sec/rw.tex}
@@ -78,6 +85,7 @@
 \input{sec/discussion.tex}
 
 % Entries for the entire Anthology, followed by custom entries
+\clearpage
 \bibliography{anthology,custom}
 
 %\appendix

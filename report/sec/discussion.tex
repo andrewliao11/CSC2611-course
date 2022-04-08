@@ -1,2 +1,10 @@
 \section{Discussion}
 
+The proposed approach shows that the influences function is highly correlated with LCS, achieving 0.7 in binary classification and 0.59 in spearman's correlation in the ranking problem.
+However, the estimation of the influence function is time-consuming and not stable.
+For each term in Eq.~\ref{eq:influence_fn_mlm}, it takes more than 20 minuites to compute.
+The bottleneck is the approximation of inverse HVP. 
+The approximation is done recursively, so it's not parallelizable. In our case, it takes 10000 recursion steps to reach convergence.
+Additionally, the computation is not stable for some words (e.g., ``trump''), leading to divergence.
+The computational expensive and instability hamper it from performing LCS in a continuous fashion. For example, monitoring the LCS for an extended period will be prohibitively computationally expensive.
+

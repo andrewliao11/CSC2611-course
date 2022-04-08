@@ -1,9 +1,24 @@
 \section{Introduction}
 
-\AL{Why languages change}
+The meaning of words continuously changes over time, reflecting complicated processes in language and society. 
+For example, the meaning of ``bubble'' extends to the travel bubble and social bubble due to the Covid-19 pandemic.
+Subtle shifts or cultural associations also impact the perpetual meaning of the word ``Iraq'' and ``Syria''.
+Studying these types of changes in meaning enables researchers to learn more about human language and to extract temporal-dependent data from texts.
 
-\AL{Why detecting language change is important? Why unsupervised detection?}
+The availability of large corpora and the progress in natural languages processing enables us to dissect the lexical semantic change (LSC) problem from a computational perspective~\cite{diachronic-survey}.
+Due to the ill-defined characteristic in LSC, the size of gold standards is very limited.
+Additionally, the need for robust evaluation plays a crucial role in LSC detection. 
+The level of increasing level of abstraction is often ignored in evaluation. 
+So far, semantic annotation is the only way to evaluate methods on historical corpora while making sure that expected changes are present in the text. 
+Annotating involves a significant investment of time and funds and results in a limited test set~\cite{challenges_lsc}.
 
-\AL{Motivation of the approach.}
 
-\AL{Summarize the contributions}
+In this work, I focus on detecting LSC in an unsupervised manner in the SemEval2020 benchmark~\cite{semeval2020}, the first larger-scale, an openly available dataset with high-quality, hand-labeled judgments.
+To approach the LSC problem, I leverage the progress in ML and NLP by analyzing the behavior of a trained language model.
+The idea is that I expect \textit{if a word has experienced a lexical semantic change between two time periods, removing the training data containing the word from a time period changes the network behaviors a lot}.
+Vice versa, if the word contains similar meanings across two corpora, removing one of the corpora from the training data does not change the network too much.
+
+I implement the idea with influence functions~\cite{influence_fn} -- a classic technique from robust statistics -- to trace a model's predictions through the learning algorithm and back to its training data.
+The proposed approach achieves 0.7 accuracies in the binary task, outperforming 20 from 22 teams in the SemEval2020 challenges.
+In the ranking task, it achieves spearman's correlation of 0.59, outperforming all 22 teams in the SemEval2020 challenges.
+
