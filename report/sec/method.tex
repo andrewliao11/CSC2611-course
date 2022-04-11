@@ -21,9 +21,9 @@ In SemEval, the degree of LSC of the target word $d_\text{LSC}(t)$ is defined as
 \noindent where $p_1(t)$ and $p_2(t)$ denote the sense frequency distribution of the target word $t$ in $C_1$ and $C_2$, respectively.
 
 
-\begin{table}[t]
+\begin{table*}[t]
 \centering
-\resizebox{0.9\linewidth}{!}{%
+\resizebox{0.75\textwidth}{!}{%
 \begin{tabular}{@{}rccc|ccc@{}}
 \toprule
 \multicolumn{1}{l}{}        & \multicolumn{3}{c|}{$C_1$} & \multicolumn{3}{c}{$C_2$} \\ \midrule
@@ -33,7 +33,7 @@ In SemEval, the degree of LSC of the target word $d_\text{LSC}(t)$ is defined as
 }
 \caption{An example of a sense frequency distribution for the word \textit{cell} in $C_1$ and $C_2$. The table is borrowed from prior work~\cite{semeval2020}.}
 \label{tab:example}
-\end{table}
+\end{table*}
 
 
 \section{Background: Influence Functions}\label{sec:background}
@@ -143,6 +143,14 @@ Following this approach, to avoid optimizing the neural network twice as in Eq.~
 I first obtain the empirical minimizer of the full corpora $\hat{\theta}$ and perform influence function approximation to estimate $\Delta L_\text{MLM}(\hat{\theta}, \hat{\theta}_{\setminus 1, t})$ and 
 $\Delta L_\text{MLM}(\hat{\theta}, \hat{\theta}_{\setminus 2, t})$:
 
+
+
+\begin{figure*}[t]
+\centering
+\includegraphics[width=0.8\textwidth]{../project/src/scale_5000-recursion_depth_10000/influences_binary.pdf}
+\caption{\textbf{Predicted Influences.} The red dash lines are the threshold for binary classification.}
+\label{fig:binary}
+\end{figure*}
 
 
 \begin{align}
