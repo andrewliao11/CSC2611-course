@@ -75,36 +75,8 @@ def get_fast_tokenizer(config):
     return fast_tokenizer
 
     
-'''   
-def init_accelerator():
-    
-    # Initialize the accelerator. We will let the accelerator handle device placement for us in this example.
-    accelerator = Accelerator()
-    # Make one log on every process with the configuration for debugging.
-    logging.basicConfig(
-        format="%(asctime)s - %(levelname)s - %(name)s - %(message)s",
-        datefmt="%m/%d/%Y %H:%M:%S",
-        level=logging.INFO,
-    )
-    logger.info(accelerator.state)
-    
-    # Setup logging, we only want one process per machine to log things on the screen.
-    # accelerator.is_local_main_process is only True for one process per machine.
-    logger.setLevel(logging.INFO if accelerator.is_local_main_process else logging.ERROR)
-    if accelerator.is_local_main_process:
-        transformers.utils.logging.set_verbosity_info()
-    else:
-        transformers.utils.logging.set_verbosity_error()
-
-    accelerator.wait_for_everyone()
-    return accelerator
-  '''
-    
-    
 @hydra.main(config_path="./config", config_name="train_bert")
 def main(config):
-
-    #accelerator = init_accelerator()
 
     if config.use_wandb:# and accelerator.is_local_main_process:
         import wandb
@@ -212,11 +184,6 @@ def main(config):
     ]
     optimizer = transformers.AdamW(optimizer_grouped_parameters, lr=config.learning_rate)
 
-    # Prepare everything with our `accelerator`.
-    #model, optimizer, train_dataloader, eval_dataloader = accelerator.prepare(
-    #    model, optimizer, train_dataloader, eval_dataloader
-    #)
-    
     
     # Scheduler and math around the number of training steps.
     num_update_steps_per_epoch = math.ceil(len(train_dataloader) / config.gradient_accumulation_steps)
@@ -261,8 +228,6 @@ def main(config):
             loss = outputs.loss
             loss = loss / config.gradient_accumulation_steps
             
-            
-            #accelerator.backward(loss)
             loss.backward()
             
             if step % config.gradient_accumulation_steps == 0 or step == len(train_dataloader) - 1:
@@ -288,7 +253,6 @@ def main(config):
                 outputs = model(**batch)
 
             loss = outputs.loss
-            #losses.append(accelerator.gather(loss.repeat(config.per_device_eval_batch_size)))
             losses.append(loss.repeat(config.per_device_eval_batch_size))
 
         losses = torch.cat(losses)
@@ -309,11 +273,7 @@ def main(config):
                 "eval/perplexity": perplexity
             })
             
-        #accelerator.wait_for_everyone()
-        #unwrapped_model = accelerator.unwrap_model(model)
-        #unwrapped_model.save_pretrained(f"model-{epoch}", save_function=accelerator.save)
         model.save_pretrained(f"model-{epoch}")
-        #to load: model = AutoModelForMaskedLM.from_pretrained("model")
 
     
 if __name__ == "__main__":

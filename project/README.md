@@ -1,3 +1,9 @@
+# Prerequisites
+- transformers (from huggingface)
+- tokenizers (from huggingface)
+- pytorch == 1.9.0
+- scipy
+
 # Instructions
 
 
